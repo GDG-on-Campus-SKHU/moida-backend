@@ -1,4 +1,4 @@
 package gdsc.skhu.moida.controller;
 
-public class ContextController {
+public class PostController {
 }
