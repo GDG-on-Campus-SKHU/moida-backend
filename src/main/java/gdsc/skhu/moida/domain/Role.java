@@ -1,4 +1,5 @@
 package gdsc.skhu.moida.domain;
 
-public class Context {
+public enum Role {
+    USER, ADMIN
 }
