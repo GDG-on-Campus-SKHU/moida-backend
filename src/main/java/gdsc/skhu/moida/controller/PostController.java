@@ -28,7 +28,7 @@ public class PostController {
     }
 
     @GetMapping("/list")
-    public Page<Post> list(@PageableDefault(size = 10, sort = "post_id", direction = Sort.Direction.ASC) Pageable pageable) {
+    public Page<Post> list(@PageableDefault(sort = "post_id", direction = Sort.Direction.ASC) Pageable pageable) {
         return postService.findAllWithPaging(pageable);
     }
 }
