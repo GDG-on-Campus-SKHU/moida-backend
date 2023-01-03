@@ -3,6 +3,7 @@ package gdsc.skhu.moida.service;
 import gdsc.skhu.moida.domain.DTO.JoinDTO;
 import gdsc.skhu.moida.domain.DTO.LoginDTO;
 import gdsc.skhu.moida.domain.DTO.TokenDTO;
+import gdsc.skhu.moida.domain.Member;
 import gdsc.skhu.moida.repository.MemberRepository;
 import gdsc.skhu.moida.security.TokenProvider;
 import lombok.RequiredArgsConstructor;

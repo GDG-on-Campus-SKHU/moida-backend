@@ -4,8 +4,6 @@ import gdsc.skhu.moida.domain.Member;
 import gdsc.skhu.moida.domain.Role;
 import lombok.Data;
 
-import java.util.Collections;
-
 @Data
 public class JoinDTO {
     private String username;
