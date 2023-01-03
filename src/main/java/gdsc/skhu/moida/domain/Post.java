@@ -22,7 +22,7 @@ public class Post {
 
     @ManyToOne
     @JoinColumn(name = "member_id")
-    private Member author;
+    private Member member;
 
     @Column(name = "title")
     private String title;
