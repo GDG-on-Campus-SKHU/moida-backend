@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class JwtUserDetailsService implements UserDetailsService {
     private final MemberRepository memberRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -30,7 +28,7 @@ public class JwtUserDetailsService implements UserDetailsService {
     private UserDetails createUserDetails(Member member) {
         return User.builder()
                 .username(member.getUsername())
-                .password(passwordEncoder.encode(member.getPassword()))
+                .password(member.getPassword())
                 .roles(member.getRole().toString())
                 .build();
     }
