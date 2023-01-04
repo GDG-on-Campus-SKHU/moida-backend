@@ -1,7 +1,6 @@
 package gdsc.skhu.moida.service;
 
 import gdsc.skhu.moida.domain.DTO.PostDTO;
-import gdsc.skhu.moida.domain.Post;
 import gdsc.skhu.moida.repository.MemberRepository;
 import gdsc.skhu.moida.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +31,7 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Post> findAllWithPaging(Pageable pageable) {
-        return postRepository.findAll(pageable);
+    public Page<PostDTO> findAllWithPaging(Pageable pageable) {
+        return postRepository.findAll(pageable).map(PostDTO::toDTO);
     }
 }

@@ -1,8 +1,6 @@
 package gdsc.skhu.moida.controller;
 
 import gdsc.skhu.moida.domain.DTO.PostDTO;
-import gdsc.skhu.moida.domain.Member;
-import gdsc.skhu.moida.domain.Post;
 import gdsc.skhu.moida.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -10,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -28,7 +25,7 @@ public class PostController {
     }
 
     @GetMapping("/list")
-    public Page<Post> list(@PageableDefault(sort = "post_id", direction = Sort.Direction.ASC) Pageable pageable) {
+    public Page<PostDTO> list(@PageableDefault(sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         return postService.findAllWithPaging(pageable);
     }
 }

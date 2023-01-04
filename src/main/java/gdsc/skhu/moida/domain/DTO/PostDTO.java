@@ -2,20 +2,16 @@ package gdsc.skhu.moida.domain.DTO;
 
 import gdsc.skhu.moida.domain.Member;
 import gdsc.skhu.moida.domain.Post;
-import gdsc.skhu.moida.service.MemberService;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 @Data
-@RequiredArgsConstructor
-@AllArgsConstructor
+@Builder
 public class PostDTO {
     private Member author;
     private String title;
     private String type;
     private String context;
-    private final MemberService memberService;
 
     public Post toEntity() {
         return Post.builder()
@@ -23,6 +19,15 @@ public class PostDTO {
                 .title(title)
                 .type(type)
                 .context(context)
+                .build();
+    }
+
+    public static PostDTO toDTO(Post post) {
+        return PostDTO.builder()
+                .author(post.getMember())
+                .title(post.getTitle())
+                .type(post.getType())
+                .context(post.getContext())
                 .build();
     }
 }
