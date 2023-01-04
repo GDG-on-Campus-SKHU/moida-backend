@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +21,7 @@ public class MemberService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final TokenProvider tokenProvider;
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public void join(JoinDTO joinRequestDTO) {
@@ -28,6 +31,7 @@ public class MemberService {
         if(!joinRequestDTO.getPassword().equals(joinRequestDTO.getRepeatedPassword())) {
             throw new IllegalStateException("재입력 비밀번호가 일치하지 않습니다.");
         }
+        joinRequestDTO.setPassword(passwordEncoder.encode(joinRequestDTO.getPassword()));
         memberRepository.save(joinRequestDTO.toEntity());
     }
 
