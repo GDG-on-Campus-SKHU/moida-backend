@@ -1,10 +1,6 @@
 package gdsc.skhu.moida.controller;
 
 import gdsc.skhu.moida.domain.DTO.PostDTO;
-<<<<<<< HEAD
-=======
-import gdsc.skhu.moida.domain.Post;
->>>>>>> develop
 import gdsc.skhu.moida.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

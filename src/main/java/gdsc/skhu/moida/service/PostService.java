@@ -1,6 +1,7 @@
 package gdsc.skhu.moida.service;
 
 import gdsc.skhu.moida.domain.DTO.PostDTO;
+import gdsc.skhu.moida.domain.Post;
 import gdsc.skhu.moida.repository.MemberRepository;
 import gdsc.skhu.moida.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +29,11 @@ public class PostService {
             throw new IllegalStateException("내용을 입력해주세요.");
         }
         postRepository.save(Post.builder()
-                        .member(memberRepository.findByUsername(username).get())
-                        .title(postDTO.getTitle())
-                        .type(postDTO.getType())
-                        .context(postDTO.getContext())
-                        .build());
+                .member(memberRepository.findByUsername(username).get())
+                .title(postDTO.getTitle())
+                .type(postDTO.getType())
+                .context(postDTO.getContext())
+                .build());
     }
 
     @Transactional
@@ -44,12 +45,12 @@ public class PostService {
             throw new IllegalStateException("내용을 입력해주세요.");
         }
         postRepository.save(Post.builder()
-                        .id(postDTO.getId())
-                        .member(memberRepository.findByUsername(postDTO.getAuthor()).get())
-                        .title(postDTO.getTitle())
-                        .type(postDTO.getType())
-                        .context(postDTO.getContext())
-                        .build());
+                .id(postDTO.getId())
+                .member(memberRepository.findByUsername(postDTO.getAuthor()).get())
+                .title(postDTO.getTitle())
+                .type(postDTO.getType())
+                .context(postDTO.getContext())
+                .build());
     }
 
     @Transactional
@@ -59,9 +60,6 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public Page<PostDTO> findAllWithPaging(Pageable pageable) {
-<<<<<<< HEAD
-        return postRepository.findAll(pageable).map(PostDTO::toDTO);
-=======
         return postRepository.findAll(pageable)
                 .map(post -> PostDTO.builder()
                         .id(post.getId())
@@ -82,6 +80,5 @@ public class PostService {
                 .type(post.getType())
                 .context(post.getContext())
                 .build();
->>>>>>> develop
     }
 }
