@@ -20,18 +20,68 @@ public class PostService {
     @Transactional
     public void write(Principal principal, PostDTO postDTO) {
         String username = principal.getName();
-        postDTO.setAuthor(memberRepository.findByUsername(username).get());
+        postDTO.setAuthor(username);
         if(postDTO.getTitle().isEmpty()) {
             throw new IllegalStateException("제목을 입력해주세요.");
         }
         if(postDTO.getContext().isEmpty()) {
             throw new IllegalStateException("내용을 입력해주세요.");
         }
-        postRepository.save(postDTO.toEntity());
+        postRepository.save(Post.builder()
+                        .member(memberRepository.findByUsername(username).get())
+                        .title(postDTO.getTitle())
+                        .type(postDTO.getType())
+                        .context(postDTO.getContext())
+                        .build());
+    }
+
+    @Transactional
+    public void edit(PostDTO postDTO) {
+        if(postDTO.getTitle().isEmpty()) {
+            throw new IllegalStateException("제목을 입력해주세요.");
+        }
+        if(postDTO.getContext().isEmpty()) {
+            throw new IllegalStateException("내용을 입력해주세요.");
+        }
+        postRepository.save(Post.builder()
+                        .id(postDTO.getId())
+                        .member(memberRepository.findByUsername(postDTO.getAuthor()).get())
+                        .title(postDTO.getTitle())
+                        .type(postDTO.getType())
+                        .context(postDTO.getContext())
+                        .build());
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        postRepository.deleteById(id);
     }
 
     @Transactional(readOnly = true)
     public Page<PostDTO> findAllWithPaging(Pageable pageable) {
+<<<<<<< HEAD
         return postRepository.findAll(pageable).map(PostDTO::toDTO);
+=======
+        return postRepository.findAll(pageable)
+                .map(post -> PostDTO.builder()
+                        .id(post.getId())
+                        .author(post.getMember().getUsername())
+                        .title(post.getTitle())
+                        .type(post.getType())
+                        .context(post.getContext())
+                        .build());
+    }
+
+    @Transactional(readOnly = true)
+    public PostDTO findById(Long id) {
+        Post post = postRepository.findById(id).get();
+        return PostDTO.builder()
+                .id(post.getId())
+                .author(post.getMember().getUsername())
+                .title(post.getTitle())
+                .type(post.getType())
+                .context(post.getContext())
+                .build();
+>>>>>>> develop
     }
 }

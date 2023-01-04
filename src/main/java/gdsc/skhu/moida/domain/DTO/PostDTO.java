@@ -1,17 +1,22 @@
 package gdsc.skhu.moida.domain.DTO;
 
+<<<<<<< HEAD
 import gdsc.skhu.moida.domain.Member;
 import gdsc.skhu.moida.domain.Post;
+=======
+>>>>>>> develop
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
 public class PostDTO {
-    private Member author;
+    private Long id;
+    private String author;
     private String title;
     private String type;
     private String context;
+<<<<<<< HEAD
 
     public Post toEntity() {
         return Post.builder()
@@ -30,4 +35,6 @@ public class PostDTO {
                 .context(post.getContext())
                 .build();
     }
+=======
+>>>>>>> develop
 }
