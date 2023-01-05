@@ -81,4 +81,16 @@ public class PostService {
                 .context(post.getContext())
                 .build();
     }
+
+    @Transactional(readOnly = true)
+    public Page<PostDTO> findByTypeWithPaging(Pageable pageable, String type) {
+        return postRepository.findByType(pageable, type)
+                .map(post -> PostDTO.builder()
+                        .id(post.getId())
+                        .author(post.getMember().getUsername())
+                        .title(post.getTitle())
+                        .type(post.getType())
+                        .context(post.getContext())
+                        .build());
+    }
 }

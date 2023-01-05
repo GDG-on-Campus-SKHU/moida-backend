@@ -35,6 +35,13 @@ public class PostController {
         return postService.findById(id);
     }
 
+    @GetMapping("/type/{type}")
+    public Page<PostDTO> typeList(
+            @PageableDefault(sort = "id", direction = Sort.Direction.ASC) Pageable pageable,
+            @PathVariable("type") String type) {
+        return postService.findByTypeWithPaging(pageable, type);
+    }
+
     @GetMapping("/edit/{id}")
     public ResponseEntity<PostDTO> edit(Principal principal, @PathVariable Long id) {
         PostDTO postDTO = postService.findById(id);
