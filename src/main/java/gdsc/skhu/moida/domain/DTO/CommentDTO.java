@@ -7,11 +7,11 @@ import java.util.List;
 
 @Data
 @Builder
-public class PostDTO {
+public class CommentDTO {
     private Long id;
-    private String author;
-    private String title;
-    private String type;
+    private Long postId;
+    private String writer;
     private String context;
-    private List<CommentDTO> comments;
+    private Long parentCommentId;
+    private List<CommentDTO> childComments;
 }

@@ -33,7 +33,6 @@ public class Post {
     @Column(name = "context")
     private String context;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "context")
-    List<Comment> comments;
+    @OneToMany(mappedBy = "post", orphanRemoval = true)
+    private List<Comment> comments;
 }
