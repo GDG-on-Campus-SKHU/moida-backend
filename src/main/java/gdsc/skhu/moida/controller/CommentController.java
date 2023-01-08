@@ -19,8 +19,18 @@ public class CommentController {
         return commentService.findByPostId(postId);
     }
 
-    @PostMapping("/{postId}/reply")
+    @PostMapping("/{postId}/comments/new")
     public ResponseEntity<String> reply(@PathVariable Long postId, @RequestBody CommentDTO commentDTO) {
         return commentService.save(postId, commentDTO);
+    }
+
+    @PatchMapping("/{postId}/comments/{commentId}")
+    public ResponseEntity<String> edit(@PathVariable Long commentId, @RequestBody CommentDTO commentDTO) {
+        return commentService.update(commentId, commentDTO);
+    }
+
+    @DeleteMapping("/{postId}/comments/{commentId}")
+    public ResponseEntity<String> delete(@PathVariable("commentId") Long commentId) {
+        return commentService.delete(commentId);
     }
 }

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -35,5 +36,5 @@ public class Comment {
     private Comment parentComment;
 
     @OneToMany(mappedBy = "parentComment", orphanRemoval = true)
-    private List<Comment> childComments;
+    private List<Comment> childComments = new ArrayList<>();
 }

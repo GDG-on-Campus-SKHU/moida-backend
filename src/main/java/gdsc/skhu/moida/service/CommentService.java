@@ -3,6 +3,7 @@ package gdsc.skhu.moida.service;
 import gdsc.skhu.moida.domain.Comment;
 import gdsc.skhu.moida.domain.DTO.CommentDTO;
 import gdsc.skhu.moida.domain.Post;
+import gdsc.skhu.moida.repository.CommentQueryRepository;
 import gdsc.skhu.moida.repository.CommentRepository;
 import gdsc.skhu.moida.repository.MemberRepository;
 import gdsc.skhu.moida.repository.PostRepository;
@@ -24,6 +25,7 @@ import java.util.Map;
 public class CommentService {
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
+    private final CommentQueryRepository commentQueryRepository;
     private final PostRepository postRepository;
 
     @Transactional
@@ -51,12 +53,12 @@ public class CommentService {
             }
         }
         Comment comment;
-        if(commentDTO.getParentCommentId() != null) {
+        if(parent != null) {
             comment = Comment.builder()
                     .writer(memberRepository.findByUsername(commentDTO.getWriter()).get())
                     .post(post)
                     .context(commentDTO.getContext())
-                    .parentComment(commentRepository.findById(commentDTO.getParentCommentId()).get())
+                    .parentComment(parent)
                     .build();
         } else {
             comment = Comment.builder()
@@ -73,43 +75,68 @@ public class CommentService {
 
     @Transactional
     public List<CommentDTO> findByPostId(Long postId) {
-        Post post;
-        if(postRepository.findById(postId).isPresent()) {
-            post = postRepository.findById(postId).get();
-        } else {
-            throw new IllegalStateException("존재하지 않는 게시글입니다.");
-        }
+        Post post = postRepository.findById(postId).orElseThrow(IllegalStateException::new);
 
-        List<Comment> comments = commentRepository.findAllByPost(post);
+        List<Comment> comments = commentQueryRepository.findAllByPost(post);
         List<CommentDTO> commentDTOs = new ArrayList<>();
         Map<Long, CommentDTO> map = new HashMap<>();
 
         //Post에 저장되어 있는 댓글 전부 불러와서 매핑
-        comments.forEach(comment -> {
-            //먼저, 부모-자식 관계가 없는 CommentDTO를 하나 빌더 패턴으로 생성
-            CommentDTO commentDTO = CommentDTO.builder()
-                    .id(comment.getId())
-                    .postId(postId)
-                    .writer(comment.getWriter().getUsername())
-                    .context(comment.getContext())
-                    .build();
+        comments.stream().forEach(comment -> {
+            //먼저, 부모-자식 관계가 없는 CommentDTO를 하나 생성
+            CommentDTO commentDTO;
 
             //부모 댓글이 존재한다면 commentDTO에 부모 댓글 Id를 저장
             if(comment.getParentComment() != null) {
-                commentDTO.setParentCommentId(comment.getParentComment().getId());
+                commentDTO = CommentDTO.builder()
+                        .id(comment.getId())
+                        .postId(postId)
+                        .writer(comment.getWriter().getUsername())
+                        .context(comment.getContext())
+                        .parentCommentId(comment.getParentComment().getId())
+                        .build();
+            } else {
+                commentDTO = CommentDTO.builder()
+                        .id(comment.getId())
+                        .postId(postId)
+                        .writer(comment.getWriter().getUsername())
+                        .context(comment.getContext())
+                        .build();
             }
-            //해쉬 맵에 해당 댓글의 Id를 Key, 댓글을 Value로 저장
+            //해시 맵에 해당 댓글의 Id를 Key, 댓글을 Value로 저장
             map.put(commentDTO.getId(), commentDTO);
 
             //부모 댓글이 존재한다면 부모 댓글의 자식 댓글 리스트에 commentDTO 추가 (대댓글)
             if (comment.getParentComment() != null) {
-                map.get(comment.getParentComment().getId()).getChildComments().add(commentDTO);
+                CommentDTO parentCommentDTO = map.get(comment.getParentComment().getId());
+                parentCommentDTO.setChildComments(new ArrayList<>());
+                parentCommentDTO.getChildComments().add(commentDTO);
             } //부모 댓글이 존재하지 않는다면 댓글 리스트에 commentDTO 추가
             else {
                 commentDTOs.add(commentDTO);
             }
         });
-
         return commentDTOs;
+    }
+
+    @Transactional
+    public ResponseEntity<String> update(Long commentId, CommentDTO commentDTO) {
+        Comment originalComment = commentRepository.findById(commentId).orElseThrow();
+        commentRepository.save(Comment.builder()
+                        .id(originalComment.getId())
+                        .writer(originalComment.getWriter())
+                        .post(originalComment.getPost())
+                        .context(commentDTO.getContext())
+                        .parentComment(originalComment.getParentComment())
+                        .childComments(originalComment.getChildComments())
+                        .build());
+        return ResponseEntity.ok("댓글 수정 성공");
+    }
+
+    @Transactional
+    public ResponseEntity<String> delete(Long commentId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow();
+        commentRepository.delete(comment);
+        return ResponseEntity.ok("댓글 삭제 완료");
     }
 }
