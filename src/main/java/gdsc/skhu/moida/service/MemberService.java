@@ -58,6 +58,8 @@ public class MemberService {
                         .title(post.getTitle())
                         .type(post.getType())
                         .context(post.getContext())
+                        .createdDate(post.getCreatedDate())
+                        .modifiedDate(post.getModifiedDate())
                         .build()
                 );
         Page<CommentDTO> comments = commentRepository.findByWriter(pageable, member)
@@ -66,6 +68,8 @@ public class MemberService {
                         .postId(comment.getPost().getId())
                         .writer(comment.getWriter().getUsername())
                         .context(comment.getContext())
+                        .createdDate(comment.getCreatedDate())
+                        .modifiedDate(comment.getModifiedDate())
                         .build()
                 );
         return MemberDTO.builder()
