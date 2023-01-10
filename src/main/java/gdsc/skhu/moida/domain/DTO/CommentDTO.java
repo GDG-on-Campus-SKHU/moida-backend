@@ -3,6 +3,7 @@ package gdsc.skhu.moida.domain.DTO;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -14,4 +15,6 @@ public class CommentDTO {
     private String context;
     private Long parentCommentId;
     private List<CommentDTO> childComments;
+    private LocalDateTime createdDate;
+    private LocalDateTime modifiedDate;
 }

@@ -8,7 +8,6 @@ import gdsc.skhu.moida.repository.CommentRepository;
 import gdsc.skhu.moida.repository.MemberRepository;
 import gdsc.skhu.moida.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CommentService {
@@ -94,6 +92,8 @@ public class CommentService {
                         .writer(comment.getWriter().getUsername())
                         .context(comment.getContext())
                         .parentCommentId(comment.getParentComment().getId())
+                        .createdDate(comment.getCreatedDate())
+                        .modifiedDate(comment.getModifiedDate())
                         .build();
             } else {
                 commentDTO = CommentDTO.builder()
@@ -101,6 +101,8 @@ public class CommentService {
                         .postId(postId)
                         .writer(comment.getWriter().getUsername())
                         .context(comment.getContext())
+                        .createdDate(comment.getCreatedDate())
+                        .modifiedDate(comment.getModifiedDate())
                         .build();
             }
             //해시 맵에 해당 댓글의 Id를 Key, 댓글을 Value로 저장

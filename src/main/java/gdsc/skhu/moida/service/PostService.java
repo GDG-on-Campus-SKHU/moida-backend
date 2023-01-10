@@ -1,6 +1,7 @@
 package gdsc.skhu.moida.service;
 
 import gdsc.skhu.moida.domain.DTO.PostDTO;
+import gdsc.skhu.moida.domain.Member;
 import gdsc.skhu.moida.domain.Post;
 import gdsc.skhu.moida.repository.MemberRepository;
 import gdsc.skhu.moida.repository.PostRepository;
@@ -17,6 +18,7 @@ import java.security.Principal;
 public class PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
+    private final CommentService commentService;
 
     @Transactional
     public void write(Principal principal, PostDTO postDTO) {
@@ -38,6 +40,8 @@ public class PostService {
 
     @Transactional
     public void edit(PostDTO postDTO) {
+        Member writer = memberRepository.findByUsername(postDTO.getAuthor()).orElseThrow();
+        Post oldPost = postRepository.findById(postDTO.getId()).orElseThrow();
         if(postDTO.getTitle().isEmpty()) {
             throw new IllegalStateException("제목을 입력해주세요.");
         }
@@ -46,10 +50,11 @@ public class PostService {
         }
         postRepository.save(Post.builder()
                 .id(postDTO.getId())
-                .member(memberRepository.findByUsername(postDTO.getAuthor()).get())
+                .member(writer)
                 .title(postDTO.getTitle())
                 .type(postDTO.getType())
                 .context(postDTO.getContext())
+                .comments(oldPost.getComments())
                 .build());
     }
 
@@ -67,18 +72,24 @@ public class PostService {
                         .title(post.getTitle())
                         .type(post.getType())
                         .context(post.getContext())
+                        .comments(commentService.findByPostId(post.getId()))
+                        .createdDate(post.getCreatedDate())
+                        .modifiedDate(post.getModifiedDate())
                         .build());
     }
 
     @Transactional(readOnly = true)
     public PostDTO findById(Long id) {
-        Post post = postRepository.findById(id).get();
+        Post post = postRepository.findById(id).orElseThrow();
         return PostDTO.builder()
                 .id(post.getId())
                 .author(post.getMember().getUsername())
                 .title(post.getTitle())
                 .type(post.getType())
                 .context(post.getContext())
+                .comments(commentService.findByPostId(post.getId()))
+                .createdDate(post.getCreatedDate())
+                .modifiedDate(post.getModifiedDate())
                 .build();
     }
 
@@ -91,6 +102,9 @@ public class PostService {
                         .title(post.getTitle())
                         .type(post.getType())
                         .context(post.getContext())
+                        .comments(commentService.findByPostId(post.getId()))
+                        .createdDate(post.getCreatedDate())
+                        .modifiedDate(post.getModifiedDate())
                         .build());
     }
 }
