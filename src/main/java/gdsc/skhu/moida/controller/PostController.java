@@ -22,7 +22,7 @@ public class PostController {
     @PostMapping("/new")
     public ResponseEntity<String> write(Principal principal, @RequestBody PostDTO postDTO) {
         postService.write(principal, postDTO);
-        return ResponseEntity.ok("new post save success");
+        return ResponseEntity.ok("Create new post success");
     }
 
     @GetMapping("/list")
@@ -57,9 +57,9 @@ public class PostController {
         if(principal.getName().equals(postDTO.getAuthor())) {
             postDTO.setId(oldPostDTO.getId());
             postService.edit(postDTO);
-            return ResponseEntity.ok("edit success");
+            return ResponseEntity.ok("Update post success");
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bad Request");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZED");
     }
 
     @DeleteMapping("/{id}")
@@ -67,8 +67,8 @@ public class PostController {
         PostDTO postDTO = postService.findById(id);
         if(principal.getName().equals(postDTO.getAuthor())) {
             postService.delete(id);
-            return ResponseEntity.ok("delete success");
+            return ResponseEntity.ok("Delete post success");
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You are not author");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZED");
     }
 }
