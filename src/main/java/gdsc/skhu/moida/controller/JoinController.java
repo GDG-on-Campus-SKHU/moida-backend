@@ -15,6 +15,6 @@ public class JoinController {
     @PostMapping("/join")
     public ResponseEntity<String> join(@RequestBody JoinDTO joinRequestDto) {
         memberService.join(joinRequestDto);
-        return ResponseEntity.ok("join success");
+        return ResponseEntity.ok("Join success");
     }
 }

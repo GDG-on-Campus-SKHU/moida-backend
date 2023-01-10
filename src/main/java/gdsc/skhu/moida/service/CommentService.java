@@ -13,10 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -36,17 +33,17 @@ public class CommentService {
         }
 
         Comment parent = null;
-        //부모 댓글 Id가 존재하는 경우
+        //부모 댓글이 존재하는 경우
         if(commentDTO.getParentCommentId() != null){
             if(commentRepository.findById(commentDTO.getParentCommentId()).isPresent()) {
                 parent = commentRepository.findById(commentDTO.getParentCommentId()).get();
             }
             //해당 Id를 가지는 댓글이 존재하지 않을 경우
             if (parent == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 댓글 Id입니다. 해당 Id를 가지는 댓글이 존재하지 않습니다.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 부모 댓글 Id입니다. 해당 Id를 가지는 댓글이 존재하지 않습니다.");
             }
             //부모 댓글의 게시글 Id와 자식 댓글의 게시글 Id를 같은지 비교
-            if(parent.getPost().getId() != commentDTO.getPostId()){
+            if(parent.getPost().getId() != postId){
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("게시글의 Id가 부모와 자식 댓글 간에 서로 다릅니다.");
             }
         }
@@ -73,17 +70,17 @@ public class CommentService {
 
     @Transactional
     public List<CommentDTO> findByPostId(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(IllegalStateException::new);
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new NoSuchElementException("해당 Id를 가진 Post가 존재하지 않습니다."));
 
         List<Comment> comments = commentQueryRepository.findAllByPost(post);
         List<CommentDTO> commentDTOs = new ArrayList<>();
         Map<Long, CommentDTO> map = new HashMap<>();
 
         //Post에 저장되어 있는 댓글 전부 불러와서 매핑
-        comments.stream().forEach(comment -> {
+        comments.forEach(comment -> {
             //먼저, 부모-자식 관계가 없는 CommentDTO를 하나 생성
             CommentDTO commentDTO;
-
             //부모 댓글이 존재한다면 commentDTO에 부모 댓글 Id를 저장
             if(comment.getParentComment() != null) {
                 commentDTO = CommentDTO.builder()
@@ -123,7 +120,8 @@ public class CommentService {
 
     @Transactional
     public ResponseEntity<String> update(Long commentId, CommentDTO commentDTO) {
-        Comment originalComment = commentRepository.findById(commentId).orElseThrow();
+        Comment originalComment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new NoSuchElementException("Comment not found"));
         commentRepository.save(Comment.builder()
                         .id(originalComment.getId())
                         .writer(originalComment.getWriter())
@@ -132,13 +130,13 @@ public class CommentService {
                         .parentComment(originalComment.getParentComment())
                         .childComments(originalComment.getChildComments())
                         .build());
-        return ResponseEntity.ok("댓글 수정 성공");
+        return ResponseEntity.ok("Update comment success");
     }
 
     @Transactional
     public ResponseEntity<String> delete(Long commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow();
         commentRepository.delete(comment);
-        return ResponseEntity.ok("댓글 삭제 완료");
+        return ResponseEntity.ok("Delete comment success");
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -25,10 +26,10 @@ public class PostService {
         String username = principal.getName();
         postDTO.setAuthor(username);
         if(postDTO.getTitle().isEmpty()) {
-            throw new IllegalStateException("제목을 입력해주세요.");
+            throw new IllegalStateException("Title not found");
         }
         if(postDTO.getContext().isEmpty()) {
-            throw new IllegalStateException("내용을 입력해주세요.");
+            throw new IllegalStateException("Context not found");
         }
         postRepository.save(Post.builder()
                 .member(memberRepository.findByUsername(username).get())
@@ -40,13 +41,15 @@ public class PostService {
 
     @Transactional
     public void edit(PostDTO postDTO) {
-        Member writer = memberRepository.findByUsername(postDTO.getAuthor()).orElseThrow();
-        Post oldPost = postRepository.findById(postDTO.getId()).orElseThrow();
+        Member writer = memberRepository.findByUsername(postDTO.getAuthor())
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+        Post oldPost = postRepository.findById(postDTO.getId())
+                .orElseThrow(() -> new NoSuchElementException("Post not found"));
         if(postDTO.getTitle().isEmpty()) {
-            throw new IllegalStateException("제목을 입력해주세요.");
+            throw new IllegalStateException("Title not found");
         }
         if(postDTO.getContext().isEmpty()) {
-            throw new IllegalStateException("내용을 입력해주세요.");
+            throw new IllegalStateException("Context not found");
         }
         postRepository.save(Post.builder()
                 .id(postDTO.getId())
@@ -80,7 +83,8 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public PostDTO findById(Long id) {
-        Post post = postRepository.findById(id).orElseThrow();
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Post not found"));
         return PostDTO.builder()
                 .id(post.getId())
                 .author(post.getMember().getUsername())

@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +51,8 @@ public class MemberService {
     @Transactional
     public MemberDTO user(Pageable pageable, Principal principal) {
         String username = principal.getName();
-        Member member = memberRepository.findByUsername(username).orElseThrow();
+        Member member = memberRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         Page<PostDTO> posts = postRepository.findByMember(pageable, member)
                 .map(post -> PostDTO.builder()
                         .id(post.getId())

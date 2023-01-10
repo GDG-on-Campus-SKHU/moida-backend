@@ -27,6 +27,6 @@ public class MemberController {
 
     @GetMapping("/admin")
     public ResponseEntity<String> adminPage() {
-        return ResponseEntity.ok("admin page access success");
+        return ResponseEntity.ok("Access admin page success");
     }
 }
