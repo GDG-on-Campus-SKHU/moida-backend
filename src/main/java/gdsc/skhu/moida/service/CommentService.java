@@ -25,12 +25,8 @@ public class CommentService {
 
     @Transactional
     public ResponseEntity<String> save(Long postId, CommentDTO commentDTO) {
-        Post post;
-        if(postRepository.findById(postId).isPresent()) {
-            post = postRepository.findById(postId).get();
-        } else {
-            throw new IllegalStateException("존재하지 않는 게시글입니다.");
-        }
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new NoSuchElementException("Post not found"));
 
         Comment parent = null;
         //부모 댓글이 존재하는 경우
@@ -40,11 +36,11 @@ public class CommentService {
             }
             //해당 Id를 가지는 댓글이 존재하지 않을 경우
             if (parent == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 부모 댓글 Id입니다. 해당 Id를 가지는 댓글이 존재하지 않습니다.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Parent comment not found");
             }
             //부모 댓글의 게시글 Id와 자식 댓글의 게시글 Id를 같은지 비교
             if(parent.getPost().getId() != postId){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("게시글의 Id가 부모와 자식 댓글 간에 서로 다릅니다.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Parent and child comment's Post id is different");
             }
         }
         Comment comment;
@@ -65,13 +61,13 @@ public class CommentService {
 
         commentRepository.save(comment);
 
-        return ResponseEntity.ok("댓글 저장 성공");
+        return ResponseEntity.ok("Create comment success");
     }
 
     @Transactional
     public List<CommentDTO> findByPostId(Long postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new NoSuchElementException("해당 Id를 가진 Post가 존재하지 않습니다."));
+                .orElseThrow(() -> new NoSuchElementException("Post not found"));
 
         List<Comment> comments = commentQueryRepository.findAllByPost(post);
         List<CommentDTO> commentDTOs = new ArrayList<>();
@@ -108,7 +104,9 @@ public class CommentService {
             //부모 댓글이 존재한다면 부모 댓글의 자식 댓글 리스트에 commentDTO 추가 (대댓글)
             if (comment.getParentComment() != null) {
                 CommentDTO parentCommentDTO = map.get(comment.getParentComment().getId());
-                parentCommentDTO.setChildComments(new ArrayList<>());
+                if(parentCommentDTO.getChildComments() == null) {
+                    parentCommentDTO.setChildComments(new ArrayList<>());
+                }
                 parentCommentDTO.getChildComments().add(commentDTO);
             } //부모 댓글이 존재하지 않는다면 댓글 리스트에 commentDTO 추가
             else {
