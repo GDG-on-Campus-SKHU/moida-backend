@@ -7,8 +7,8 @@ import gdsc.skhu.moida.repository.MemberRepository;
 import gdsc.skhu.moida.repository.PostRepository;
 import gdsc.skhu.moida.security.TokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -53,7 +53,7 @@ public class MemberService {
         String username = principal.getName();
         Member member = memberRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        Page<PostDTO> posts = postRepository.findByMember(pageable, member)
+        Slice<PostDTO> posts = postRepository.findByMember(pageable, member)
                 .map(post -> PostDTO.builder()
                         .id(post.getId())
                         .author(post.getMember().getUsername())
@@ -64,7 +64,7 @@ public class MemberService {
                         .modifiedDate(post.getModifiedDate())
                         .build()
                 );
-        Page<CommentDTO> comments = commentRepository.findByWriter(pageable, member)
+        Slice<CommentDTO> comments = commentRepository.findByWriter(pageable, member)
                 .map(comment -> CommentDTO.builder()
                         .id(comment.getId())
                         .postId(comment.getPost().getId())

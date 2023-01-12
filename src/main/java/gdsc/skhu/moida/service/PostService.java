@@ -9,6 +9,7 @@ import gdsc.skhu.moida.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -101,7 +102,7 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public Page<PostDTO> findByTypeWithPaging(Pageable pageable, String type) {
+    public Slice<PostDTO> findByTypeWithPaging(Pageable pageable, String type) {
         PostType postType = PostType.getType(type.toUpperCase());
         return postRepository.findByPostType(pageable, postType)
                 .map(post -> PostDTO.builder()

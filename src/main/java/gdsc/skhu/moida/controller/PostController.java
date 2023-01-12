@@ -3,10 +3,7 @@ package gdsc.skhu.moida.controller;
 import gdsc.skhu.moida.domain.DTO.PostDTO;
 import gdsc.skhu.moida.service.PostService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,15 +22,16 @@ public class PostController {
         return ResponseEntity.ok("Create new post success");
     }
 
-    @GetMapping("/list")
-    public Page<PostDTO> list(@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+    @GetMapping("/list/{pageNumber}")
+    public Slice<PostDTO> list(@PathVariable("pageNumber") Integer pageNumber) {
+        Pageable pageable = PageRequest.of(pageNumber == 0 ? 0 : pageNumber-1, 10, Sort.by("id").descending());
         return postService.findAllWithPaging(pageable);
     }
 
-    @GetMapping("/type/{type}")
-    public Page<PostDTO> typeList(
-            @PageableDefault(sort = "id", direction = Sort.Direction.ASC) Pageable pageable,
-            @PathVariable("type") String type) {
+    @GetMapping("/type/{type}/{pageNumber}")
+    public Slice<PostDTO> typeList(@PathVariable("type") String type,
+                                   @PathVariable("pageNumber") Integer pageNumber) {
+        Pageable pageable = PageRequest.of(pageNumber == 0 ? 0 : pageNumber-1, 10, Sort.by("id").descending());
         return postService.findByTypeWithPaging(pageable, type);
     }
 
