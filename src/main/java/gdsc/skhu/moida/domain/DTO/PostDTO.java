@@ -11,6 +11,7 @@ import java.util.List;
 public class PostDTO {
     private Long id;
     private String author;
+    private String nickname;
     private String title;
     private String type;
     private String context;
