@@ -12,6 +12,7 @@ public class CommentDTO {
     private Long id;
     private Long postId;
     private String writer;
+    private String nickname;
     private String context;
     private Long parentCommentId;
     private List<CommentDTO> childComments;
