@@ -58,7 +58,7 @@ public class MemberService {
                         .id(post.getId())
                         .author(post.getMember().getUsername())
                         .title(post.getTitle())
-                        .type(post.getType())
+                        .type(post.getPostType().toString())
                         .context(post.getContext())
                         .createdDate(post.getCreatedDate())
                         .modifiedDate(post.getModifiedDate())
