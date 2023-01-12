@@ -30,16 +30,16 @@ public class PostController {
         return postService.findAllWithPaging(pageable);
     }
 
-    @GetMapping("/{id}")
-    public PostDTO show(@PathVariable Long id) {
-        return postService.findById(id);
-    }
-
     @GetMapping("/type/{type}")
     public Page<PostDTO> typeList(
             @PageableDefault(sort = "id", direction = Sort.Direction.ASC) Pageable pageable,
             @PathVariable("type") String type) {
         return postService.findByTypeWithPaging(pageable, type);
+    }
+
+    @GetMapping("/{id}")
+    public PostDTO show(@PathVariable Long id) {
+        return postService.findById(id);
     }
 
     @GetMapping("/edit/{id}")

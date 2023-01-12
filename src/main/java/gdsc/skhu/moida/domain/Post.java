@@ -28,7 +28,8 @@ public class Post extends BaseTime {
     private String title;
 
     @Column(name = "type")
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private PostType postType;
 
     @Column(name = "context")
     private String context;

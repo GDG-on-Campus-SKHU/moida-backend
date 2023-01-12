@@ -3,6 +3,7 @@ package gdsc.skhu.moida.service;
 import gdsc.skhu.moida.domain.DTO.PostDTO;
 import gdsc.skhu.moida.domain.Member;
 import gdsc.skhu.moida.domain.Post;
+import gdsc.skhu.moida.domain.PostType;
 import gdsc.skhu.moida.repository.MemberRepository;
 import gdsc.skhu.moida.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ public class PostService {
         postRepository.save(Post.builder()
                 .member(memberRepository.findByUsername(username).get())
                 .title(postDTO.getTitle())
-                .type(postDTO.getType())
+                .postType(PostType.getType(postDTO.getType().toUpperCase()))
                 .context(postDTO.getContext())
                 .build());
     }
@@ -55,7 +56,7 @@ public class PostService {
                 .id(postDTO.getId())
                 .member(writer)
                 .title(postDTO.getTitle())
-                .type(postDTO.getType())
+                .postType(PostType.getType(postDTO.getType().toUpperCase()))
                 .context(postDTO.getContext())
                 .comments(oldPost.getComments())
                 .build());
@@ -73,7 +74,7 @@ public class PostService {
                         .id(post.getId())
                         .author(post.getMember().getUsername())
                         .title(post.getTitle())
-                        .type(post.getType())
+                        .type(post.getPostType().toString())
                         .context(post.getContext())
                         .comments(commentService.findByPostId(post.getId()))
                         .createdDate(post.getCreatedDate())
@@ -89,7 +90,7 @@ public class PostService {
                 .id(post.getId())
                 .author(post.getMember().getUsername())
                 .title(post.getTitle())
-                .type(post.getType())
+                .type(post.getPostType().toString())
                 .context(post.getContext())
                 .comments(commentService.findByPostId(post.getId()))
                 .createdDate(post.getCreatedDate())
@@ -99,12 +100,13 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public Page<PostDTO> findByTypeWithPaging(Pageable pageable, String type) {
-        return postRepository.findByType(pageable, type)
+        PostType postType = PostType.getType(type.toUpperCase());
+        return postRepository.findByPostType(pageable, postType)
                 .map(post -> PostDTO.builder()
                         .id(post.getId())
                         .author(post.getMember().getUsername())
                         .title(post.getTitle())
-                        .type(post.getType())
+                        .type(post.getPostType().toString())
                         .context(post.getContext())
                         .comments(commentService.findByPostId(post.getId()))
                         .createdDate(post.getCreatedDate())
