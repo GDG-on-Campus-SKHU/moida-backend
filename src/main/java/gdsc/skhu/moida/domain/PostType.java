@@ -1,5 +1,7 @@
 package gdsc.skhu.moida.domain;
 
+import java.util.NoSuchElementException;
+
 public enum PostType {
     PROJECT, STUDY, MEAL;
 
@@ -10,7 +12,8 @@ public enum PostType {
             return PostType.STUDY;
         } else if(value.equals("MEAL")) {
             return PostType.MEAL;
+        } else {
+            throw new NoSuchElementException("Type not found");
         }
-        return null;
     }
 }
