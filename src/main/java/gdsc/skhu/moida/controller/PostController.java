@@ -24,14 +24,14 @@ public class PostController {
 
     @GetMapping("/list/{pageNumber}")
     public Slice<PostDTO> list(@PathVariable("pageNumber") Integer pageNumber) {
-        Pageable pageable = PageRequest.of(pageNumber == 0 ? 0 : pageNumber-1, 10, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(pageNumber == 0 ? 0 : pageNumber-1, 9, Sort.by("id").descending());
         return postService.findAllWithPaging(pageable);
     }
 
     @GetMapping("/type/{type}/{pageNumber}")
     public Slice<PostDTO> typeList(@PathVariable("type") String type,
                                    @PathVariable("pageNumber") Integer pageNumber) {
-        Pageable pageable = PageRequest.of(pageNumber == 0 ? 0 : pageNumber-1, 10, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(pageNumber == 0 ? 0 : pageNumber-1, 9, Sort.by("id").descending());
         return postService.findByTypeWithPaging(pageable, type);
     }
 
