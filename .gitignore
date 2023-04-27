@@ -4,6 +4,11 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+.DS_Store
+
+### Docker ###
+docker-compose.yml
+.env
 
 ### STS ###
 .apt_generated

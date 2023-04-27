@@ -2,7 +2,6 @@ package gdsc.skhu.moida.domain.DTO;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Slice;
 
 @Builder
